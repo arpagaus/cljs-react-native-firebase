@@ -12,23 +12,23 @@
     (catch java.io.IOException e (.printStackTrace e))))
 
 (->
-  (parse-json-file "/home/remo/migros-products/lena+kleinfahrzeuge.json"))
-
+ (parse-json-file "/home/remo/migros-products/lena+kleinfahrzeuge.json"))
 
 (defn extract-category [article-response]
   (->> article-response
-    (map #(update % :categories first))
-    (map (fn [x] [(:name x) (get-in x [:categories :name])]))
-    first))
+       (map #(update % :categories first))
+       (map (fn [x] [(:name x) (get-in x [:categories :name])]))
+       first))
 
 #_(run! #(let [res (extract-category (parse-json-file %))]
-            (println (.getName %) ";" (get res 0) ";" (get res 1)))
-    (sort-by #(.getName %) (.listFiles response-dir)))
+           (println (.getName %) ";" (get res 0) ";" (get res 1)))
+        (sort-by #(.getName %) (.listFiles response-dir)))
 
-(run! #(->> (parse-json-file %)
-         (map (fn [m] (assoc m :_id (:id m))))
-         (clutch/bulk-update "mig-product"))
-  (.listFiles response-dir))
+(run! #(->>
+        (parse-json-file %)
+        (map (fn [m] (assoc m :_id (:id m))))
+        (clutch/bulk-update "mig-product"))
+      (.listFiles response-dir))
 
 (clutch/get-database "mig-product")
 
